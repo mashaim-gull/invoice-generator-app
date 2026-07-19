@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/invoice_model.dart';
 import '../services/invoice_service.dart';
@@ -41,6 +42,20 @@ class InvoiceListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('All Invoices'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            tooltip: 'Export as CSV',
+            onPressed: () async {
+              final path = await invoiceService.exportInvoicesToCsv();
+              if (path != null) {
+                Fluttertoast.showToast(msg: 'Exported successfully to: $path');
+              } else {
+                Fluttertoast.showToast(msg: 'Failed to export CSV. Check permissions.');
+              }
+            },
+          ),
+        ],
         bottom: totalInvoices == 0
             ? null
             : PreferredSize(

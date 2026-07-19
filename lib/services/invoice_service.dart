@@ -1,5 +1,10 @@
+import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:flutter/foundation.dart';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
 import '../models/invoice_model.dart';
 import '../utils/constants.dart';
 import 'invoice_number_service.dart';
@@ -172,6 +177,65 @@ class InvoiceService extends ChangeNotifier {
     // Default Sort (Created At Descending)
     result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return result;
+  }
+
+  // ── Monthly Income Summary ───────────────────────────────────────────────────
+  double get currentMonthRevenue {
+    final now = DateTime.now();
+    return _invoices
+        .where((i) => i.invoiceStatus == InvoiceStatus.paid && i.invoiceDate.year == now.year && i.invoiceDate.month == now.month)
+        .fold(0.0, (sum, i) => sum + i.grandTotal);
+  }
+
+  int get currentMonthInvoicesCount {
+    final now = DateTime.now();
+    return _invoices.where((i) => i.invoiceDate.year == now.year && i.invoiceDate.month == now.month).length;
+  }
+
+  // ── CSV Export ───────────────────────────────────────────────────────────────
+  Future<String?> exportInvoicesToCsv() async {
+    try {
+      if (Platform.isAndroid) {
+        if (!await Permission.storage.request().isGranted && !await Permission.manageExternalStorage.request().isGranted) {
+          return null;
+        }
+      }
+
+      List<List<dynamic>> rows = [
+        ['Invoice Number', 'Customer Name', 'Invoice Date', 'Status', 'Total Amount']
+      ];
+
+      for (var invoice in _invoices) {
+        rows.add([
+          invoice.invoiceNumber,
+          invoice.customer.name,
+          DateFormat('yyyy-MM-dd').format(invoice.invoiceDate),
+          invoice.invoiceStatus.name.toUpperCase(),
+          invoice.grandTotal.toStringAsFixed(2),
+        ]);
+      }
+
+      String csvData = const ListToCsvConverter().convert(rows);
+
+      Directory? directory;
+      if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download');
+        if (!await directory.exists()) directory = await getExternalStorageDirectory();
+      } else if (Platform.isWindows) {
+        directory = await getDownloadsDirectory();
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory != null) {
+        final file = File('${directory.path}/invoices_export_${DateTime.now().millisecondsSinceEpoch}.csv');
+        await file.writeAsString(csvData);
+        return file.path;
+      }
+    } catch (e) {
+      debugPrint('Export CSV error: $e');
+    }
+    return null;
   }
 }
 

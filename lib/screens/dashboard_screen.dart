@@ -8,6 +8,7 @@ import '../utils/constants.dart';
 import '../widgets/dashboard_card.dart';
 import '../widgets/empty_state_widget.dart';
 import '../widgets/status_chip_widget.dart';
+import 'customer_history_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -229,6 +230,22 @@ class _StatsGrid extends StatelessWidget {
         endColor: const Color(0xFFD32F2F),
         subtitle: 'Past due date',
       ),
+      _CardData(
+        title: 'Monthly Income',
+        value: '$currencySymbol${numberFmt.format(invoiceService.currentMonthRevenue)}',
+        icon: Icons.calendar_today_outlined,
+        startColor: const Color(0xFF6A1B9A),
+        endColor: const Color(0xFF8E24AA),
+        subtitle: 'This month',
+      ),
+      _CardData(
+        title: 'Monthly Invoices',
+        value: '${invoiceService.currentMonthInvoicesCount}',
+        icon: Icons.assignment_outlined,
+        startColor: const Color(0xFF0277BD),
+        endColor: const Color(0xFF039BE5),
+        subtitle: 'Created this month',
+      ),
     ];
 
     return LayoutBuilder(
@@ -312,6 +329,15 @@ class _QuickActions extends StatelessWidget {
             label: 'Settings',
             color: colorScheme.tertiary,
             onTap: () => Navigator.of(context).pushNamed('/settings'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _ActionChip(
+            icon: Icons.people_outline,
+            label: 'Customers',
+            color: Colors.teal,
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CustomerHistoryScreen())),
           ),
         ),
       ],

@@ -19,12 +19,16 @@ class CustomerModel extends HiveObject {
   @HiveField(4)
   String phone;
 
+  @HiveField(5)
+  bool? isFavorite;
+
   CustomerModel({
     required this.id,
     required this.name,
     required this.address,
     required this.email,
     required this.phone,
+    this.isFavorite = false,
   });
 }
 
