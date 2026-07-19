@@ -12,16 +12,6 @@ The Invoice Generator App is a modern, responsive, and robust Flutter applicatio
 - **Settings**: Customize company details, logo, currency, default tax, and toggle Dark Mode.
 - **Offline First**: All data is securely stored on the device using Hive.
 
-## Screenshots
-> Note: Replace these placeholders with actual screenshots.
-
-| Dashboard | All Invoices | Create Invoice |
-|-----------|--------------|----------------|
-| ![Dashboard Screenshot](placeholders/dashboard.png) | ![Invoices Screenshot](placeholders/invoices.png) | ![Create Screenshot](placeholders/create.png) |
-
-| Invoice Details | Settings | PDF Preview |
-|-----------------|----------|-------------|
-| ![Details Screenshot](placeholders/details.png) | ![Settings Screenshot](placeholders/settings.png) | ![PDF Screenshot](placeholders/pdf.png) |
 
 ## Folder Structure
 ```
@@ -76,8 +66,6 @@ flutter build apk --release
 ```
 The generated APK will be located at `build/app/outputs/flutter-apk/app-release.apk`.
 
-## GitHub Repository
-[Link to your GitHub Repository here]
 
 ## Future Improvements
 - Cloud Syncing and Backup (Firebase / Supabase).
